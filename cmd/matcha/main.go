@@ -4,7 +4,9 @@ import "github.com/urfave/cli"
 
 func main() {}
 
-type app cli.App
+type app struct {
+	*cli.App
+}
 
 func (a *app) setUp() {
 	a.setCommands()
