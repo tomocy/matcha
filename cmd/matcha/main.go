@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/tomocy/matcha/cmd/matcha/client"
 	"github.com/urfave/cli"
 )
 
@@ -33,5 +34,15 @@ func (a *app) setUp() {
 }
 
 func (a *app) setCommands() {
-	a.Commands = []cli.Command{}
+	a.Commands = []cli.Command{
+		{
+			Name:   "cli",
+			Action: a.runCLI,
+		},
+	}
+}
+
+func (a *app) runCLI(ctx *cli.Context) error {
+	var c client.CLI
+	return c.FetchPosts()
 }
