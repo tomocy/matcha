@@ -4,6 +4,15 @@ import "github.com/urfave/cli"
 
 func main() {}
 
+func newApp() *app {
+	a := &app{
+		App: cli.NewApp(),
+	}
+	a.setUp()
+
+	return a
+}
+
 type app struct {
 	*cli.App
 }
