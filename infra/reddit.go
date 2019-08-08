@@ -160,9 +160,14 @@ func (r *Reddit) saveConfig(conf redditConfig) error {
 	})
 }
 
-func (r *Reddit) resetConfig(config *config) error {
-	config.Reddit = redditConfig{}
-	return saveConfig(config)
+func (r *Reddit) resetConfig() error {
+	conf := new(config)
+	if loaded, err := loadConfig(); err == nil {
+		loaded.Reddit = redditConfig{}
+		conf = loaded
+	}
+
+	return saveConfig(conf)
 }
 
 type oauthRequest struct {
