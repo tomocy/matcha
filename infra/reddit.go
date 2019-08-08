@@ -77,7 +77,7 @@ func (r *Reddit) fetchPosts(destURL string, params url.Values) ([]*domain.Post, 
 }
 
 func (r *Reddit) trieveAuthorization() (*oauth2.Token, error) {
-	if config, err := loadConfig(); err == nil {
+	if config, err := loadConfig(); err == nil && config.Reddit.AccessToken.Valid() {
 		return config.Reddit.AccessToken, nil
 	}
 
