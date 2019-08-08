@@ -23,7 +23,7 @@ func (ps asciiPosts) String() string {
 		if i == 0 {
 			b.WriteString("----------\n")
 		}
-		b.WriteString(fmt.Sprintf("%s\n", p.Title))
+		b.WriteString(fmt.Sprintf("%s %s\n%s\n%s\n", p.Subreddit, p.CreatedAt.Format("2006/01/02 15:04"), p.User.Name, p.Title))
 		b.WriteString("----------\n")
 	}
 
