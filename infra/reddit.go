@@ -46,21 +46,7 @@ type oauth struct {
 }
 
 func (r *Reddit) FetchPosts() ([]*domain.Post, error) {
-	tok, err := r.trieveAuthorization()
-	if err != nil {
-		return nil, fmt.Errorf("failed to fetch posts: %s", err)
-	}
-
-	var posts reddit.Posts
-	if err := r.trieve(&oauthRequest{
-		tok:     tok,
-		method:  http.MethodGet,
-		destURL: "https://oauth.reddit.com/new",
-	}, &posts); err != nil {
-		return nil, fmt.Errorf("failed to fetch posts: %s", err)
-	}
-
-	return posts.Adapt(), nil
+	return r.fetchPosts("https://oauth.reddit.com/new", nil)
 }
 
 func (r *Reddit) fetchPosts(destURL string, params url.Values) ([]*domain.Post, error) {
