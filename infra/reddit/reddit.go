@@ -1,6 +1,13 @@
 package reddit
 
-import "github.com/tomocy/matcha/domain"
+import (
+	"errors"
+	"strconv"
+	"strings"
+	"time"
+
+	"github.com/tomocy/matcha/domain"
+)
 
 type Posts struct {
 	Data struct {
@@ -20,9 +27,10 @@ func (ps Posts) Adapt() []*domain.Post {
 }
 
 type Post struct {
-	SubredditNamePrefixed string `json:"subreddit_name_prefixed"`
-	AuthorFullname        string `json:"author_fullname"`
-	Title                 string `json:"title"`
+	SubredditNamePrefixed string        `json:"subreddit_name_prefixed"`
+	AuthorFullname        string        `json:"author_fullname"`
+	Title                 string        `json:"title"`
+	CreatedUTC            unixTimestamp `json:"created_utc"`
 }
 
 func (p *Post) Adapt() *domain.Post {
@@ -31,6 +39,36 @@ func (p *Post) Adapt() *domain.Post {
 		User: domain.User{
 			Name: p.AuthorFullname,
 		},
-		Title: p.Title,
+		Title:     p.Title,
+		CreatedAt: time.Time(p.CreatedUTC),
 	}
+}
+
+type unixTimestamp time.Time
+
+func (t *unixTimestamp) UnmarshalJSON(data []byte) error {
+	parsed, err := t.parse(string(data))
+	if err != nil {
+		return err
+	}
+	*t = unixTimestamp(parsed.Local())
+
+	return nil
+}
+
+func (t *unixTimestamp) parse(ts string) (time.Time, error) {
+	splited := strings.Split(ts, ".")
+	if len(splited) != 2 {
+		return time.Time{}, errors.New("invalid format of unix timestamp: the format should be sec.nsec")
+	}
+	sec, err := strconv.ParseInt(splited[0], 10, 64)
+	if err != nil {
+		return time.Time{}, err
+	}
+	nsec, err := strconv.ParseInt(splited[1], 10, 64)
+	if err != nil {
+		return time.Time{}, err
+	}
+
+	return time.Unix(sec, nsec), nil
 }
