@@ -15,7 +15,8 @@ func (c *CLI) FetchPosts() error {
 		return err
 	}
 
-	c.showPosts(ps)
+	ordered := orderOlderPosts(ps)
+	c.showPosts(ordered)
 
 	return nil
 }
