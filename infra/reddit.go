@@ -66,6 +66,12 @@ func (r *Reddit) fetchPosts(destURL string, params url.Values) ([]*domain.Post, 
 		return nil, fmt.Errorf("failed to fetch posts: %s", err)
 	}
 
+	if err := r.saveConfig(redditConfig{
+		AccessToken: tok,
+	}); err != nil {
+		return nil, fmt.Errorf("failed to fetch posts: %s", err)
+	}
+
 	return posts.Adapt(), nil
 }
 
@@ -141,6 +147,17 @@ func (r *Reddit) trieve(req *oauthRequest, dest interface{}) error {
 	defer resp.Body.Close()
 
 	return readJSON(resp.Body, dest)
+}
+
+func (r *Reddit) saveConfig(conf redditConfig) error {
+	if loaded, err := loadConfig(); err == nil {
+		loaded.Reddit = conf
+		return saveConfig(loaded)
+	}
+
+	return saveConfig(&config{
+		Reddit: conf,
+	})
 }
 
 func (r *Reddit) resetConfig(config *config) error {
