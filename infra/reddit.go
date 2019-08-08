@@ -7,6 +7,7 @@ import (
 	"math/rand"
 	"net/http"
 	"net/url"
+	"time"
 
 	"golang.org/x/oauth2"
 
@@ -42,6 +43,46 @@ type Reddit struct {
 type oauth struct {
 	config oauth2.Config
 	state  string
+}
+
+func (r *Reddit) polePosts(ctx context.Context, dest string) (<-chan []*domain.Post, <-chan error) {
+	psCh, errCh := make(chan []*domain.Post), make(chan error)
+	go func() {
+		defer func() {
+			close(psCh)
+			close(errCh)
+		}()
+
+		sendPosts := func(lastID string, psCh chan<- []*domain.Post, errCh chan<- error) string {
+			params := make(url.Values)
+			if lastID != "" {
+				params.Set("after", lastID)
+			}
+			ps, err := r.fetchPosts(dest, params)
+			if err != nil {
+				errCh <- err
+				return ""
+			}
+			if len(ps) <= 0 {
+				return ""
+			}
+
+			psCh <- ps
+			return ps[0].ID
+		}
+
+		lastID := sendPosts("", psCh, errCh)
+		for {
+			select {
+			case <-ctx.Done():
+				break
+			case <-time.After(2 * time.Minute):
+				lastID = sendPosts(lastID, psCh, errCh)
+			}
+		}
+	}()
+
+	return psCh, errCh
 }
 
 func (r *Reddit) FetchPosts() ([]*domain.Post, error) {
