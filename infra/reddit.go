@@ -70,6 +70,10 @@ func (r *Reddit) fetchPosts(destURL string, params url.Values) ([]*domain.Post, 
 }
 
 func (r *Reddit) trieveAuthorization() (*oauth2.Token, error) {
+	if config, err := loadConfig(); err == nil {
+		return config.Reddit.AccessToken, nil
+	}
+
 	r.oauth.state = fmt.Sprintf("%d", rand.Intn(1000))
 	url := r.oauth.config.AuthCodeURL(r.oauth.state)
 	fmt.Printf("open this link: %s\n", url)
