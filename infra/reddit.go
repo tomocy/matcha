@@ -23,7 +23,7 @@ func NewReddit() *Reddit {
 			config: oauth2.Config{
 				ClientID:     "w9IvCG5aiZb-fA",
 				ClientSecret: "eYU7TZHoMmt1lOkOL9gbXBc2BTY",
-				RedirectURL:  "http://localhost",
+				RedirectURL:  "http://localhost/reddit/authorization",
 				Endpoint: oauth2.Endpoint{
 					AuthURL:   "https://www.reddit.com/api/v1/authorize",
 					TokenURL:  "https://www.reddit.com/api/v1/access_token",
@@ -101,7 +101,7 @@ func (r *Reddit) handleAuthorizationRedirect() (<-chan *oauth2.Token, <-chan err
 			close(errCh)
 		}()
 
-		http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
+		http.HandleFunc("/reddit/authorization", func(w http.ResponseWriter, req *http.Request) {
 			q := req.URL.Query()
 			state, code := q.Get("state"), q.Get("code")
 			if r.oauth.state != state {
