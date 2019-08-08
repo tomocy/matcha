@@ -63,6 +63,7 @@ func (r *Reddit) fetchPosts(destURL string, params url.Values) ([]*domain.Post, 
 		destURL: destURL,
 		params:  params,
 	}, &posts); err != nil {
+		r.resetConfig()
 		return nil, fmt.Errorf("failed to fetch posts: %s", err)
 	}
 
