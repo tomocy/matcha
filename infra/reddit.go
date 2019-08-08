@@ -17,6 +17,7 @@ import (
 )
 
 func NewReddit() *Reddit {
+	createWorkspace()
 	return &Reddit{
 		oauth: oauth{
 			config: oauth2.Config{
@@ -136,6 +137,11 @@ func (r *Reddit) trieve(req *oauthRequest, dest interface{}) error {
 	defer resp.Body.Close()
 
 	return readJSON(resp.Body, dest)
+}
+
+func (r *Reddit) resetConfig(config *config) error {
+	config.Reddit = redditConfig{}
+	return saveConfig(config)
 }
 
 type oauthRequest struct {
