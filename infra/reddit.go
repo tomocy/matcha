@@ -60,7 +60,7 @@ func (r *Reddit) pollPosts(ctx context.Context, dest string) (<-chan []*domain.P
 		sendPosts := func(lastID string, psCh chan<- []*domain.Post, errCh chan<- error) string {
 			params := make(url.Values)
 			if lastID != "" {
-				params.Set("after", lastID)
+				params.Set("before", lastID)
 			}
 			ps, err := r.fetchPosts(dest, params)
 			if err != nil {
@@ -81,7 +81,10 @@ func (r *Reddit) pollPosts(ctx context.Context, dest string) (<-chan []*domain.P
 			case <-ctx.Done():
 				break
 			case <-time.After(2 * time.Minute):
-				lastID = sendPosts(lastID, psCh, errCh)
+				id := sendPosts(lastID, psCh, errCh)
+				if id != "" {
+					lastID = id
+				}
 			}
 		}
 	}()
