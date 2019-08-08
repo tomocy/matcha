@@ -45,6 +45,10 @@ type oauth struct {
 	state  string
 }
 
+func (r *Reddit) PolePosts(ctx context.Context) (<-chan []*domain.Post, <-chan error) {
+	return r.polePosts(ctx, "https://oauth.reddit.com/new")
+}
+
 func (r *Reddit) polePosts(ctx context.Context, dest string) (<-chan []*domain.Post, <-chan error) {
 	psCh, errCh := make(chan []*domain.Post), make(chan error)
 	go func() {
