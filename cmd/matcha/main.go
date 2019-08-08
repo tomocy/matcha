@@ -38,11 +38,21 @@ func (a *app) setCommands() {
 		{
 			Name:   "cli",
 			Action: a.runCLI,
+			Flags: []cli.Flag{
+				&cli.BoolFlag{
+					Name: "p",
+				},
+			},
 		},
 	}
 }
 
 func (a *app) runCLI(ctx *cli.Context) error {
 	var c client.CLI
+	isPoll := ctx.Bool("p")
+	if isPoll {
+		return c.PollPosts()
+	}
+
 	return c.FetchPosts()
 }
