@@ -27,6 +27,6 @@ type Post struct {
 
 func (p *Post) Adapt() *domain.Post {
 	return &domain.Post{
-		Text: p.Title,
+		Title: p.Title,
 	}
 }

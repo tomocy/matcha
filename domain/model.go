@@ -5,7 +5,7 @@ import "time"
 type Post struct {
 	Subreddit string
 	User      User
-	Text      string
+	Title     string
 	CreatedAt time.Time
 }
 
