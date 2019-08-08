@@ -2,6 +2,7 @@ package client
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 
 	"github.com/tomocy/matcha/app"
@@ -30,4 +31,14 @@ func (ps asciiPosts) String() string {
 	}
 
 	return b.String()
+}
+
+func orderOlderPosts(ps []*domain.Post) []*domain.Post {
+	ordered := make([]*domain.Post, len(ps))
+	copy(ordered, ps)
+	sort.Slice(ordered, func(i, j int) bool {
+		return ordered[i].CreatedAt.Before(ordered[j].CreatedAt)
+	})
+
+	return ordered
 }
