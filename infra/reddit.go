@@ -63,6 +63,25 @@ func (r *Reddit) FetchPosts() ([]*domain.Post, error) {
 	return posts.Adapt(), nil
 }
 
+func (r *Reddit) fetchPosts(destURL string, params url.Values) ([]*domain.Post, error) {
+	tok, err := r.trieveAuthorization()
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch posts: %s", err)
+	}
+
+	var posts reddit.Posts
+	if err := r.trieve(&oauthRequest{
+		tok:     tok,
+		method:  http.MethodGet,
+		destURL: destURL,
+		params:  params,
+	}, &posts); err != nil {
+		return nil, fmt.Errorf("failed to fetch posts: %s", err)
+	}
+
+	return posts.Adapt(), nil
+}
+
 func (r *Reddit) trieveAuthorization() (*oauth2.Token, error) {
 	r.oauth.state = fmt.Sprintf("%d", rand.Intn(1000))
 	url := r.oauth.config.AuthCodeURL(r.oauth.state)
