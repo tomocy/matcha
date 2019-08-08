@@ -28,7 +28,7 @@ func (ps Posts) Adapt() []*domain.Post {
 
 type Post struct {
 	SubredditNamePrefixed string        `json:"subreddit_name_prefixed"`
-	AuthorFullname        string        `json:"author_fullname"`
+	Author                string        `json:"author"`
 	Title                 string        `json:"title"`
 	CreatedUTC            unixTimestamp `json:"created_utc"`
 }
@@ -37,7 +37,7 @@ func (p *Post) Adapt() *domain.Post {
 	return &domain.Post{
 		Subreddit: p.SubredditNamePrefixed,
 		User: domain.User{
-			Name: p.AuthorFullname,
+			Name: p.Author,
 		},
 		Title:     p.Title,
 		CreatedAt: time.Time(p.CreatedUTC),
