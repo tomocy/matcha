@@ -82,7 +82,7 @@ func (r *Reddit) trieveAuthorization() (*oauth2.Token, error) {
 	}
 
 	r.oauth.state = fmt.Sprintf("%d", rand.Intn(1000))
-	url := r.oauth.config.AuthCodeURL(r.oauth.state)
+	url := r.oauth.config.AuthCodeURL(r.oauth.state, oauth2.SetAuthURLParam("duration", "permanent"))
 	fmt.Printf("open this link: %s\n", url)
 	tokCh, errCh := r.handleAuthorizationRedirect()
 	select {
