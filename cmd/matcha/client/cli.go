@@ -13,12 +13,12 @@ import (
 
 type CLI struct{}
 
-func (c *CLI) PolePosts() error {
+func (c *CLI) PollPosts() error {
 	u := newPostUsecase()
 	ctx, cancelFn := context.WithCancel(context.Background())
 	sigCh := make(chan os.Signal)
 	signal.Notify(sigCh, syscall.SIGINT)
-	psCh, errCh := u.PolePosts(ctx)
+	psCh, errCh := u.PollPosts(ctx)
 	for {
 		select {
 		case ps := <-psCh:

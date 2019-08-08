@@ -10,8 +10,8 @@ type PostUsecase struct {
 	Repo domain.PostRepo
 }
 
-func (u *PostUsecase) PolePosts(ctx context.Context) (<-chan []*domain.Post, <-chan error) {
-	return u.Repo.PolePosts(ctx)
+func (u *PostUsecase) PollPosts(ctx context.Context) (<-chan []*domain.Post, <-chan error) {
+	return u.Repo.PollPosts(ctx)
 }
 
 func (u *PostUsecase) FetchPosts() ([]*domain.Post, error) {
