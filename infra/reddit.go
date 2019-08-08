@@ -109,9 +109,7 @@ func (r *Reddit) handleAuthorizationRedirect() (<-chan *oauth2.Token, <-chan err
 				errCh <- errors.New("invalid state")
 				return
 			}
-			ctx := context.WithValue(context.Background(), oauth2.HTTPClient, &http.Client{
-				Transport: new(oauthUserAgentTransport),
-			})
+			ctx := r.userAgentTransportContext(context.Background())
 			tok, err := r.oauth.config.Exchange(ctx, code)
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
@@ -130,9 +128,7 @@ func (r *Reddit) handleAuthorizationRedirect() (<-chan *oauth2.Token, <-chan err
 }
 
 func (r *Reddit) trieve(req *oauthRequest, dest interface{}) error {
-	ctx := context.WithValue(context.Background(), oauth2.HTTPClient, &http.Client{
-		Transport: new(oauthUserAgentTransport),
-	})
+	ctx := r.userAgentTransportContext(context.Background())
 	client := r.oauth.config.Client(ctx, req.tok)
 	var resp *http.Response
 	var err error
@@ -148,6 +144,12 @@ func (r *Reddit) trieve(req *oauthRequest, dest interface{}) error {
 	defer resp.Body.Close()
 
 	return readJSON(resp.Body, dest)
+}
+
+func (r *Reddit) userAgentTransportContext(parent context.Context) context.Context {
+	return context.WithValue(parent, oauth2.HTTPClient, &http.Client{
+		Transport: new(oauthUserAgentTransport),
+	})
 }
 
 func (r *Reddit) saveConfig(conf redditConfig) error {
