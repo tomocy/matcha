@@ -1,6 +1,7 @@
 package client
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/tomocy/matcha/app"
@@ -20,10 +21,10 @@ func (ps asciiPosts) String() string {
 	var b strings.Builder
 	for i, p := range ps {
 		if i == 0 {
-			b.WriteString("-----")
+			b.WriteString("----------\n")
 		}
-		b.WriteString(p.Text)
-		b.WriteString("-----")
+		b.WriteString(fmt.Sprintf("%s\n", p.Text))
+		b.WriteString("----------\n")
 	}
 
 	return b.String()
