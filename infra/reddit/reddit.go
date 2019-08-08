@@ -27,6 +27,7 @@ func (ps Posts) Adapt() []*domain.Post {
 }
 
 type Post struct {
+	Name                  string        `json:"name"`
 	SubredditNamePrefixed string        `json:"subreddit_name_prefixed"`
 	Author                string        `json:"author"`
 	Title                 string        `json:"title"`
@@ -35,6 +36,7 @@ type Post struct {
 
 func (p *Post) Adapt() *domain.Post {
 	return &domain.Post{
+		ID:        p.Name,
 		Subreddit: p.SubredditNamePrefixed,
 		User: domain.User{
 			Name: p.Author,
