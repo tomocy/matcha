@@ -8,8 +8,6 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/tomocy/deverr"
-
 	"golang.org/x/oauth2"
 
 	"github.com/tomocy/matcha/domain"
@@ -128,22 +126,34 @@ func (r *Reddit) handleAuthorizationRedirect() (<-chan *oauth2.Token, <-chan err
 }
 
 func (r *Reddit) trieve(req *oauthRequest, dest interface{}) error {
-	ctx := r.userAgentTransportContext(context.Background())
-	client := r.oauth.config.Client(ctx, req.tok)
-	var resp *http.Response
-	var err error
-	switch req.method {
-	case http.MethodGet:
-		resp, err = client.Get(req.destURL)
-	default:
-		return deverr.NotImplemented
-	}
+	resp, err := r.request(req)
 	if err != nil {
 		return err
 	}
 	defer resp.Body.Close()
+	if http.StatusBadRequest <= resp.StatusCode {
+		return errors.New(resp.Status)
+	}
 
 	return readJSON(resp.Body, dest)
+}
+
+func (r *Reddit) request(req *oauthRequest) (*http.Response, error) {
+	ctx := r.userAgentTransportContext(context.Background())
+	client := r.oauth.config.Client(ctx, req.tok)
+	if req.method != http.MethodGet {
+		return client.PostForm(req.destURL, req.params)
+	}
+
+	parsed, err := url.Parse(req.destURL)
+	if err != nil {
+		return nil, err
+	}
+	if req.params != nil {
+		parsed.RawQuery = req.params.Encode()
+	}
+
+	return client.Get(parsed.String())
 }
 
 func (r *Reddit) userAgentTransportContext(parent context.Context) context.Context {
