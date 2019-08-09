@@ -7,6 +7,7 @@ type Post struct {
 	Subreddit string
 	User      User
 	Title     string
+	Text      string
 	CreatedAt time.Time
 }
 
