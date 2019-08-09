@@ -31,6 +31,7 @@ type Post struct {
 	SubredditNamePrefixed string        `json:"subreddit_name_prefixed"`
 	Author                string        `json:"author"`
 	Title                 string        `json:"title"`
+	SelfText              string        `json:"selftext"`
 	CreatedUTC            unixTimestamp `json:"created_utc"`
 }
 
@@ -42,6 +43,7 @@ func (p *Post) Adapt() *domain.Post {
 			Name: p.Author,
 		},
 		Title:     p.Title,
+		Text:      p.SelfText,
 		CreatedAt: time.Time(p.CreatedUTC),
 	}
 }
